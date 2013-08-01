@@ -25,8 +25,8 @@ import com.ladinc.mcp.core.poker.actions.PokerAction;
 import com.ladinc.mcp.core.poker.actions.RaiseAction;
 import com.ladinc.mcp.core.poker.objects.Card;
 import com.ladinc.mcp.core.poker.objects.TableType;
-import com.ladinc.mcp.core.utils.PokerUtils;
 import com.ladinc.mcp.core.poker.objects.Player;
+import com.ladinc.mcp.core.poker.utils.PokerUtils;
 
 
 /**
