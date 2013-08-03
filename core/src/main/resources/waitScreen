@@ -12,26 +12,51 @@
 		<script type="text/javascript" src="PageHelper.js"></script>
 	</head>
 
-	<body>
+	<body onLoad="initHeartbeat();">
 		<script type="text/javascript">
 			
-			function registerPlayer()
+			function initHeartbeat()
 			{
-
-				var name = document.getElementById("name").value;
-
-				registerNameWithServer(name);
-				
-				//Set waiting indicator
-					
-				
+				setInterval(sendHeartbeat, 1000);
 			}
 			
-			function registerNameWithServer(name)
+			function sendHeartbeat()
 			{
-				var myRand=parseInt(Math.random()*99999999);
+				var url = "heartbeat?id=" + getId();
 				
-				var url = "passEvent?id=" + getId() +  "&event=register&name="	+ name;
+				var xmlhttp
+				if (window.XMLHttpRequest)
+				{
+					xmlhttp=new XMLHttpRequest();
+				}
+				
+				xmlhttp.open("GET",url,true);
+				
+				xmlhttp.onreadystatechange = function()
+				{
+					if (xmlhttp.readyState==4 && xmlhttp.status==200) 
+					{ 
+						handleHeartbeat(xmlhttp.responseText);
+					}
+				}
+				
+				xmlhttp.send();
+			}
+			
+			function handleHeartbeat(respText)
+			{
+				var obj = JSON.parse(respText);
+				
+				if(obj.hasOwnProperty('redirect'))
+				{
+					window.location.href = obj.redirect + "?id=" + getId();
+				}
+			}
+			
+			function startGame()
+			{
+				
+				var url = "passEvent?id=" + getId() +  "&event=start";
 				
 				var xmlhttp
 				if (window.XMLHttpRequest)
@@ -46,7 +71,7 @@
 					if (xmlhttp.readyState==4 && xmlhttp.status==200) 
 					{ 
 						//When name is registered. redirect to wait screen
-						window.location.href = "waitScreen?id=" + getId();
+						window.location.href = "gameScreen?id=" + getId();
 					}
 				}
 				
@@ -57,7 +82,7 @@
 		<div data-role="page">
 			
 				<div data-role="header">
-					<h1>MCP Poker - Register Screen</h1>
+					<h1>MCP Poker - Wait Screen</h1>
 				</div><!-- /header -->
 			   
 			   	<div data-role="content" style="text-align:center">	
@@ -65,12 +90,12 @@
 						<table style="margin-left:auto; margin-right:auto;">
 							<tr>
 								<td>
-									 Enter Your Name: <input id="name" type="text" name="name" value="">
+									 Wait for other players or start game.
 								</td>
 							</tr>
 							<tr>
 								<td>
-									<input id="proceed" type="button" name="event" value="Register" onclick="registerPlayer()">
+									<input id="proceed" type="button" name="event" value="Start Game" onclick="startGame()">
 								</td>
 							</tr>
 						</table>

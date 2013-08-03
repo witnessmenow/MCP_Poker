@@ -9,18 +9,20 @@ import com.ladinc.mcp.MCP;
 import com.ladinc.mcp.RedirectOption;
 import com.ladinc.mcp.core.controllers.MCPListenerClient;
 import com.ladinc.mcp.core.poker.objects.Player;
-import com.ladinc.mcp.core.screens.GameLobby;
+import com.ladinc.mcp.core.screens.GameLobbyScreen;
 
 public class MCPPoker extends Game {
 
 	
 	public Map<String, Player> players;
 	
-	public GameLobby gameLobby;
+	public GameLobbyScreen gameLobby;
 	
 	public MCP mcp;
 	
 	public MCPListenerClient mcpListener;
+	
+	public boolean startGame = false;
 	
 	
 	@Override
@@ -35,33 +37,15 @@ public class MCPPoker extends Game {
 	
 	private void initMCP()
 	{
-		mcp = new MCP(8899);
-		
-		try {
-			mcp.start();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		if(mcp.getListeningPort() <= 0)
-		{
-			//port was in use, using a random one
-			
-			mcp = new MCP(0);
-			
-			try {
-				mcp.start();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		mcp = MCP.tryCreateAndStartMCPWithPort(8899);
 		
 		
 		//We do not want any deafult redirect options
 		mcp.redirectOptions.clear();
-		mcp.redirectOptions.add(new RedirectOption("custom/register", "MCP Pooker"));
+		mcp.redirectOptions.add(new RedirectOption("register", "MCP Poker"));
+		mcp.customLinks.add("register");
+		mcp.customLinks.add("waitScreen");
+		mcp.customLinks.add("gameScreen");
 		
 		
 		mcpListener = new MCPListenerClient(this);
@@ -73,7 +57,7 @@ public class MCPPoker extends Game {
 	
 	private void initScreens()
 	{
-		this.gameLobby = new GameLobby(this);
+		this.gameLobby = new GameLobbyScreen(this);
 		
 	}
 

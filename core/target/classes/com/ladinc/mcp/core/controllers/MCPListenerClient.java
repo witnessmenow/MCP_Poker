@@ -50,6 +50,10 @@ public class MCPListenerClient implements MCPContorllersListener {
 			{
 				registerPlayer(parms.get("id"), parms.get("name"));
 			}
+			else if(parms.get("event").contains("start"))
+			{
+				this.game.startGame = true;
+			}
 		}
 	}
 	

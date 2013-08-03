@@ -1,5 +1,9 @@
 package com.ladinc.mcp.core.screens;
 
+import java.util.Map;
+
+import org.json.simple.JSONObject;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL10;
@@ -7,8 +11,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.ladinc.mcp.core.MCPPoker;
+import com.ladinc.mcp.core.poker.objects.Player;
 
-public class GameLobby implements Screen{
+public class GameLobbyScreen implements Screen{
 
 	private int screenWidth;
     private int screenHeight;
@@ -23,7 +28,7 @@ public class GameLobby implements Screen{
     
     private static final String TITLE = "MCP Texas Holdem";
     
-    public GameLobby(MCPPoker game)
+    public GameLobbyScreen(MCPPoker game)
     {
     	this.game = game;
     	
@@ -52,6 +57,29 @@ public class GameLobby implements Screen{
 		
 		drawSprites();
 		
+		if(checkForStart())
+		{
+			startGame();
+		}
+		
+	}
+	
+	private void startGame()
+	{
+		
+		JSONObject obj = new JSONObject();
+		obj.put("redirect", "gameScreen");
+		
+		for(Map.Entry<String, Player> entry : this.game.players.entrySet())
+		{		
+			this.game.mcp.hearbeatResponses.put(entry.getKey(), obj);
+		}
+	}
+	
+	private boolean checkForStart()
+	{
+		//look for some flag
+		return this.game.startGame;
 	}
 	
 	private void drawSprites()
@@ -62,6 +90,7 @@ public class GameLobby implements Screen{
 		this.spriteBatch.begin();
 		DisplayHeadingText(this.spriteBatch);
 		DisplayMCPAddressText(this.spriteBatch);
+		displayPlayers(this.spriteBatch);
 		this.spriteBatch.end();
 	}
 	
@@ -78,9 +107,29 @@ public class GameLobby implements Screen{
 		String text = "Connect To: " + this.game.mcp.getAddressForClients();
 		
 		float xPos = (this.screenWidth/2) -  this.font.getBounds(text).width/2;
-		float yPos = (this.screenHeight) -  (this.screenHeight/7)*3;
+		float yPos = (this.screenHeight) -  (this.screenHeight/7)*2;
 		
 		this.font.draw(sb, text, xPos, yPos);
+	}
+	
+	private void displayPlayers(SpriteBatch sb)
+	{
+		float yPos = (this.screenHeight) -  (this.screenHeight/7)*3;
+		
+		String playerName = "";
+		
+		int i = this.game.players.size();
+		
+		for(Map.Entry<String, Player> entry : this.game.players.entrySet())
+		{		
+			playerName = (i) +") " +entry.getValue().getName();
+			
+			float xPos = (this.screenWidth/2) -  this.font.getBounds(playerName).width/2;
+			float yPosAdjusted = yPos -  (i-1)*this.font.getBounds(playerName).height*2;
+			
+			this.font.draw(sb, playerName, xPos, yPosAdjusted);
+			i--;
+		}
 	}
 
 	@Override
@@ -92,6 +141,8 @@ public class GameLobby implements Screen{
 	@Override
 	public void show() {
 		spriteBatch = new SpriteBatch();
+		
+		this.game.startGame = false;
 		
 	}
 

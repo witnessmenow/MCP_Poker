@@ -20,17 +20,44 @@
 
 				var name = document.getElementById("name").value;
 
+				registerNameWithServer(name);
+				
+				//Set waiting indicator
+					
+				
+			}
+			
+			function registerNameWithServer(name)
+			{
+				var myRand=parseInt(Math.random()*99999999);
+				
 				var url = "passEvent?id=" + getId() +  "&event=register&name="	+ name;
 				
-				window.location.href =	url;		
+				var xmlhttp
+				if (window.XMLHttpRequest)
+				{
+					xmlhttp=new XMLHttpRequest();
+				}
 				
+				xmlhttp.open("GET",url,true);
+				
+				xmlhttp.onreadystatechange = function()
+				{
+					if (xmlhttp.readyState==4 && xmlhttp.status==200) 
+					{ 
+						//When name is registered. redirect to wait screen
+						window.location.href = "waitScreen?id=" + getId();
+					}
+				}
+				
+				xmlhttp.send();
 			}
 		</script>
 		
 		<div data-role="page">
 			
 				<div data-role="header">
-					<h1>Keyboard Controller</h1>
+					<h1>MCP Poker - Register Screen</h1>
 				</div><!-- /header -->
 			   
 			   	<div data-role="content" style="text-align:center">	
