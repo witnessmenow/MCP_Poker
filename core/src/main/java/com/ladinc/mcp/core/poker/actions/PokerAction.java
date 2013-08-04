@@ -51,6 +51,8 @@ public abstract class PokerAction {
     /** Posting the small blind. */
     public static final PokerAction SMALL_BLIND = new SmallBlindAction();
     
+    public static final PokerAction WAIT = new WaitAction();
+    
     /** The action's name. */
     private final String name;
     
